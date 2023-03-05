@@ -20,5 +20,5 @@ def get_version(rel_path):
 setup(
     name="baked-tools",
     version=get_version("baked_tools/__init__.py"),
-    packages=["baked_tools"],
+    packages=find_packages(),
 )
