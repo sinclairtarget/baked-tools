@@ -33,6 +33,13 @@ so another option is to export the API key to your environment. See
 [here](https://askubuntu.com/questions/58814/how-do-i-add-environment-variables)
 for instructions on how to do that.
 
+### Getting More Help
+You can get additional help about how to run the program by invoking:
+
+```
+$ ./baked-tools.pex --help
+```
+
 ## Instructions (for Developers)
 Create a virtual environment using a tool like `virtualenv`.
 
