@@ -7,9 +7,16 @@ class ProjectNotFoundError(BakedToolsError):
         self.project_name = project_name
         self.existing_projects = existing_projects
 
+    def __str__(self):
+        return f"Could not find project: {self.project_name}"
+
 
 class MovieFileNotFoundError(BakedToolsError):
-    pass
+    def __init__(self, filepath):
+        self.filepath = filepath
+
+    def __str__(self):
+        return f"File does not exist: {self.filepath}"
 
 
 class APIKeyNotFoundError(BakedToolsError):

@@ -2,7 +2,9 @@ import logging
 from pathlib import Path
 
 from .lib.shotgrid import SG
-from .lib.errors import ProjectNotFoundError, APIKeyNotFoundError
+from .lib.errors import (
+    ProjectNotFoundError, APIKeyNotFoundError, MovieFileNotFoundError,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -28,6 +30,9 @@ def upload_movie(project_id, movie_filepath, is_dry_run):
     code = derive_code(movie_filepath)
     logger.info(f"Creating version {code} with media at {movie_filepath}.")
 
+    if not movie_filepath.exists():
+        raise MovieFileNotFoundError(movie_filepath)
+
     if not is_dry_run:
         sg = _get_sg()
         shot = sg.create_shot(project_id, code)
@@ -44,6 +49,7 @@ def upload_movies(project_name, movie_filepaths, is_dry_run):
     try:
         sg = _get_sg()
     except APIKeyNotFoundError as e:
+        logger.error(e)
         print("Could not find API key.")
         print(f"You must set specify you API key using the environment variable: {e.env_var_name}.")
         return False
@@ -51,6 +57,7 @@ def upload_movies(project_name, movie_filepaths, is_dry_run):
     try:
         project_id = sg.resolve_project_id(project_name)
     except ProjectNotFoundError as e:
+        logger.error(e)
         print(f'Could not find a project named "{e.project_name}".')
         print("Here are the available projects:")
         for p in sorted(e.existing_projects):
@@ -65,7 +72,14 @@ def upload_movies(project_name, movie_filepaths, is_dry_run):
             end="",
             flush=True,
         )
-        code = upload_movie(project_id, path, is_dry_run)
-        print(f".........Created version {code}.\n", end="", flush=True)
+
+        try:
+            code = upload_movie(project_id, path, is_dry_run)
+        except MovieFileNotFoundError as e:
+            logger.error(e)
+            print("\n" + str(e))
+            return False
+        else:
+            print(f".........Created version {code}.\n", end="", flush=True)
 
     return True
