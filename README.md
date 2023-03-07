@@ -3,41 +3,55 @@ A collection of scripts for interacting with the Shotgrid Python API.
 
 ## Instructions (for End Users)
 ### Things You Need
-You need the program itself installed on your computer. This should just be a
-file called `baked-tools.pex`.
+You need the program itself as a file called `baked-tools.pex`. You should
+download this to your `Downloads` folder.
 
-You also need the Baked Tools API key. Someone needs to give this to you if you
+You also need a Shotgrid API key. Someone needs to give this to you if you
 don't have it already.
 
+### First Time Setup
+If you haven't run the program before, there are a few things you need to do to
+get it set up on your computer.
+
+The program needs to be run from a terminal emulator. On MacOS, there is a
+terminal emulator installed by default called _Terminal_.
+
+Open the _Terminal_ application. Then enter the following commands, paying
+careful attention to the different kinds of quotation marks and replacing
+`<your api key here>` with the Shotgrid AIP key.
+
+```
+$ mkdir ~/bin
+$ cp ~/Downloads/baked-tools.pex ~/bin
+$ chmod 755 ~/bin/baked-tools.pex
+$ echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
+$ echo "export SHOTGRID_API_KEY=$(printf "%q" '<your api key here>')" >> ~/.bashrc
+```
+
+Once you've done this, close the terminal window and create a new one. Now you
+should be good to go.
+
 ### Running the Program
-To invoke the program, you need to use a terminal emulator application. On
-MacOS, there is a terminal emulator installed by default called _Terminal_.
-
-You need to open your terminal emulator, then navigate to the directory where
-you have your media to upload. Make sure the file `baked-tools.pex` is either
-in your `PATH` (see
-[here](https://askubuntu.com/questions/109381/how-to-add-path-of-a-program-to-path-environment-variable))
-or available in the directory where you have your media files.
-
-You can them upload your media by invoking, for example, the following:
+You can upload your media by invoking, for example, the following:
 
 ```
-$ SHOTGRID_API_KEY=xxx ./baked-tools.pex upload "Python API Test Project" *.mp4
+$ baked-tools.pex upload "Python API Test Project" *.mp4
 ```
 
-You must provide the API key as shown in the above command. Replace `xxx` with
-the actual API key.
+This will upload all of the `.mp4` files in the current directory to the
+project named `Python API Test Project`.
 
-It can be inconvenient to specify the API key every time you run the program,
-so another option is to export the API key to your environment. See
-[here](https://askubuntu.com/questions/58814/how-do-i-add-environment-variables)
-for instructions on how to do that.
+If you just want to upload one or two files, you can do that too:
+
+```
+$ baked-tools.pex upload "Python API Test Project" TTD_001_0010.mp4 TTD_001_0020.mp4
+```
 
 ### Getting More Help
 You can get additional help about how to run the program by invoking:
 
 ```
-$ ./baked-tools.pex --help
+$ baked-tools.pex --help
 ```
 
 ## Instructions (for Developers)
