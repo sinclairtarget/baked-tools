@@ -1,0 +1,154 @@
+shot_statuses:
+  - key: omt
+    label: Omit
+  - key: bid
+    label: Bidding
+  - key: hld
+    label: On Hold
+  - key: mda
+    label: Awaiting Media
+  - key: awa
+    label: Awaiting Assignment
+  - key: actv
+    label: Active
+  - key: final
+    label: Final
+
+task_statuses:
+  - key: omt
+    label: Omit
+  - key: hld
+    label: On Hold
+  - key: wtg
+    label: Waiting to Start
+  - key: rdy
+    label: Ready to Start
+  - key: per
+    label: Pull Error
+  - key: ip
+    label: In Progress
+  - key: ncl
+    label: Needs Clarification
+  - key: ofr
+    label: Out For Roto
+  - key: bfr
+    label: Back From Roto
+  - key: ofp
+    label: Out For Paint
+  - key: bfp
+    label: Back From Paint
+  - key: stc
+    label: Step Completed
+  - key: cnv
+    label: Check New Version
+  - key: cli
+    label: Send to Client
+  - key: qckbk
+    label: QC Clickback
+  - key: rev
+    label: Pending Client Review
+  - key: adn
+    label: Address New Notes
+  - key: rdypro
+    label: Ready for ProRes
+  - key: pro
+    label: PRORES Delivered
+  - key: hires
+    label: Ready for HiRes
+  - key: dlh
+    label: Delivered HiRes
+  - key: sndexr
+    label: Ready for EXR
+  - key: exr
+    label: EXR Delivered
+  - key: di
+    label: Delivered to DI
+
+shot_to_task:
+  omt:
+    - omt
+  bid:
+    - wtg
+  hld:
+    - hld
+  mda:
+    - wtg
+  awa:
+    - wtg
+  actv:
+    - rdy
+    - wtg
+    - rdy
+    - per
+    - ip
+    - ncl
+    - ofr
+    - bfr
+    - ofp
+    - bfp
+    - stc
+    - cnv
+    - cli
+    - qckbk
+    - rev
+    - adn
+    - rdypro
+    - pro
+    - hires
+    - dlh
+    - sndexr
+    - exr
+  final:
+    - di
+
+task_to_shot:
+  omt:
+    - omt
+  hld:
+    - hld
+  wtg:
+    - mda
+    - bid
+    - awa
+  rdy:
+    - actv
+  per:
+    - actv
+  ip:
+    - actv
+  ncl:
+    - actv
+  ofr:
+    - actv
+  bfr:
+    - actv
+  ofp:
+    - actv
+  bfp:
+    - actv
+  stc:
+    - actv
+  cnv:
+    - actv
+  cli:
+    - actv
+  qckbk:
+    - actv
+  rev:
+    - actv
+  adn:
+    - actv
+  rdypro:
+    - actv
+  pro:
+    - actv
+  hires:
+    - actv
+  dlh:
+    - actv
+  sndexr:
+    - actv
+  exr:
+    - actv
+  di:
+    - final
