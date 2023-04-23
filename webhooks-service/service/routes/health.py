@@ -1,12 +1,9 @@
 from flask import Blueprint
 
-
-from .lib.logging import get_logger
+from ..lib.logging import get_logger
 
 
 logger = get_logger(__name__)
-
-
 bp = Blueprint("health", __name__)
 
 
