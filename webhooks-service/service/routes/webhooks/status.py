@@ -1,8 +1,11 @@
+from datetime import datetime, timezone
+
 from flask import Blueprint, request, current_app
 import pydantic
 
 from ...lib.logging import get_logger
 from ...lib.models.webhooks.status import ShotStatusWebhookBody
+from ...lib.sg import update_linked_tasks
 
 
 logger = get_logger(__name__)
@@ -80,4 +83,15 @@ def shot_status():
         + ", ".join(task_statuses)
     )
 
-    return {}, 204
+    now = datetime.now(timezone.utc)
+    delay_seconds = (now - webhook_post_body.timestamp).total_seconds()
+    updated_tasks = update_linked_tasks(project_id, shot_id, task_statuses)
+
+    return {
+        "project_id": project_id,
+        "shot_id": shot_id,
+        "lag_after_original_event_seconds": int(delay_seconds),
+        "old_shot_status": old_shot_status,
+        "new_shot_status": new_shot_status,
+        "updated_tasks": updated_tasks
+    }, 200
