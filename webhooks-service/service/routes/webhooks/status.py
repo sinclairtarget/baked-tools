@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 import pydantic
 
 from ...lib.logging import get_logger
@@ -70,6 +70,14 @@ def shot_status():
     logger.info(
         f'Shot {shot_id} was updated from status "{old_shot_status}" to '
         f'"{new_shot_status}" in project {project_id}.'
+    )
+
+    task_statuses = current_app.config["STATUS_MAPPING"].map_shot_status(
+        new_shot_status
+    )
+    logger.info(
+        "Updating linked tasks to a status that is one of: "
+        + ", ".join(task_statuses)
     )
 
     return {}, 204

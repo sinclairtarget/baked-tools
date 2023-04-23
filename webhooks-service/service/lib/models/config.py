@@ -3,6 +3,8 @@ from functools import reduce
 
 from pydantic import BaseModel, conlist, validator
 
+from ..errors import UnknownStatusError
+
 
 class ShotgridStatus(BaseModel):
     key: str
@@ -47,6 +49,8 @@ class StatusMapping(BaseModel):
                     "exist: " + ", ".join(nonexistent_statuses)
                 )
 
+        return shot_to_task
+
     @validator("task_to_shot")
     def task_to_shot_is_valid(cls, task_to_shot, values):
         if "task_statuses" in values:
@@ -78,3 +82,26 @@ class StatusMapping(BaseModel):
                     "The following shot statuses were mapped to but do not "
                     "exist: " + ", ".join(nonexistent_statuses)
                 )
+
+        return task_to_shot
+
+    def map_shot_status(self, shot_status):
+        try:
+            task_statuses = self.shot_to_task[shot_status]
+        except KeyError as e:
+            raise UnknownStatusError(
+                f'Unknown shot status: "{shot_status}".'
+            ) from e
+
+        return task_statuses
+
+
+    def map_task_status(self, task_status):
+        try:
+            shot_statuses = self.task_to_shot[task_status]
+        except KeyError as e:
+            raise UnknownStatusError(
+                f'Unknown task status: "{task_status}".'
+            ) from e
+
+        return shot_statuses

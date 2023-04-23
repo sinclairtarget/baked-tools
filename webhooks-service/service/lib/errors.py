@@ -4,3 +4,7 @@ class BakedError(Exception):
 
 class ConfigurationError(BakedError):
     pass
+
+
+class UnknownStatusError(BakedError):
+    pass
