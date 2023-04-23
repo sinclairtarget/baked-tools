@@ -18,6 +18,8 @@ markupsafe==2.1.2
     #   werkzeug
 pydantic==1.10.7
     # via -r requirements.in
+pyyaml==6.0
+    # via -r requirements.in
 typing-extensions==4.5.0
     # via pydantic
 werkzeug==2.2.3
