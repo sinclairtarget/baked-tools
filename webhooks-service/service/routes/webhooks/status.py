@@ -19,6 +19,8 @@ def validation_error_response(validation_error):
 @bp.route("/shot", methods=("POST",))
 def shot_status():
     """
+    Receives the following JSON post body:
+
     {
       "data": {
         "id": "693322.80953.0",
@@ -61,5 +63,13 @@ def shot_status():
     except pydantic.ValidationError as e:
         return validation_error_response(e), 400
 
-    logger.info(f"Got data:\n{webhook_post_body}")
+    shot_id = webhook_post_body.data.entity.id
+    project_id = webhook_post_body.data.project.id
+    old_shot_status = webhook_post_body.data.meta.old_value
+    new_shot_status = webhook_post_body.data.meta.new_value
+    logger.info(
+        f'Shot {shot_id} was updated from status "{old_shot_status}" to '
+        f'"{new_shot_status}" in project {project_id}.'
+    )
+
     return {}, 204
