@@ -16,5 +16,9 @@ markupsafe==2.1.2
     # via
     #   jinja2
     #   werkzeug
+pydantic==1.10.7
+    # via -r requirements.in
+typing-extensions==4.5.0
+    # via pydantic
 werkzeug==2.2.3
     # via flask
