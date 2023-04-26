@@ -20,6 +20,8 @@ pydantic==1.10.7
     # via -r requirements.in
 pyyaml==6.0
     # via -r requirements.in
+shotgun-api3 @ git+https://github.com/shotgunsoftware/python-api.git@86f64f32c03852d73601b53c672f172e84b0575f
+    # via -r requirements.in
 typing-extensions==4.5.0
     # via pydantic
 werkzeug==2.2.3
