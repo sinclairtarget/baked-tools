@@ -18,12 +18,13 @@ class AttributeChangeMeta(BaseModel):
     new_value: str
 
 
-class ShotAttributeChange(BaseModel):
+class WebhookData(BaseModel):
+    event_type: str
     entity: Entity
     project: Project
     meta : AttributeChangeMeta
 
 
-class ShotStatusWebhookBody(BaseModel):
-    data: ShotAttributeChange
+class WebhookBody(BaseModel):
+    data: WebhookData
     timestamp: datetime

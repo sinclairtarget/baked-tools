@@ -5,7 +5,7 @@ shot_statuses:
     label: Bidding
   - key: hld
     label: On Hold
-  - key: mda
+  - key: media
     label: Awaiting Media
   - key: awa
     label: Awaiting Assignment
@@ -71,13 +71,11 @@ shot_to_task:
     - wtg
   hld:
     - hld
-  mda:
+  media:
     - wtg
   awa:
     - wtg
   actv:
-    - rdy
-    - wtg
     - rdy
     - per
     - ip
@@ -107,7 +105,7 @@ task_to_shot:
   hld:
     - hld
   wtg:
-    - mda
+    - media
     - bid
     - awa
   rdy:

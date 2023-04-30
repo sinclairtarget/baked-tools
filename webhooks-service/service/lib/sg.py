@@ -51,6 +51,26 @@ class SG:
             ]
         )
 
+    def find_shot_by_task(self, task_id):
+        return self._api.find_one(
+            "Shot",
+            [["tasks", "is", { "type": "Task", "id": task_id }]],
+            [
+                "id",
+                "cached_display_name",
+                "project",
+                "code",
+                "created_at",
+                "created_by",
+                "updated_at",
+                "updated_by",
+                "description",
+                "user",
+                "sg_status_list",
+                "tasks",
+            ]
+        )
+
     def find_task(self, task_id):
         return self._api.find_one(
             "Task",
@@ -67,8 +87,27 @@ class SG:
                 "sg_status_list",
                 "sg_versions",
                 "sg_latest_version",
+                "sg_shot_code",
             ]
         )
+
+    def find_version(self, version_id):
+        return self._api.find_one(
+            "Version",
+            [["id", "is", version_id]],
+            [
+                "id",
+                "cached_display_name",
+                "project",
+                "created_at",
+                "created_by",
+                "updated_at",
+                "updated_by",
+                "sg_status_list",
+                "sg_link_to_shot",
+            ]
+        )
+
 
     def find_tasks(self, task_ids):
         filters = [{
@@ -99,6 +138,13 @@ class SG:
         ]
         return self._api.batch(batch_data)
 
+    def set_shot_status(self, shot_id, new_status):
+        data = {
+            "shots": [{ "type": "Shot", "id": shot_id }],
+            "sg_status_list": new_status,
+        }
+        return self._api.update("Shot", shot_id, data)
+
 
 def update_linked_tasks(project_id, shot_id, valid_task_statuses):
     """
@@ -108,7 +154,8 @@ def update_linked_tasks(project_id, shot_id, valid_task_statuses):
     linked task is not updated. Otherwise, the linked task has its status
     updated to the first status in valid_task_statuses.
 
-    Returns a list of tasks that were updated.
+    Returns a tuple with the list of original tasks and a list of tasks that
+    were updated.
     """
     sg = SG()
     shot = sg.find_shot(shot_id)
@@ -126,3 +173,23 @@ def update_linked_tasks(project_id, shot_id, valid_task_statuses):
     )
 
     return tasks_to_update, updated_tasks
+
+
+def update_linked_shot(project_id, task_id, valid_shot_statuses):
+    """
+    For the given task, finds the linked shot and updates its status.
+
+    If the linked shot already has a status in the list valid_shot_statuses,
+    the linked shot is not updated. Otherwise, the linked shot has its status
+    updated to the first status in valid_shot_statuses.
+
+    Returns a tuple of the original shot and the updated shot.
+    """
+    sg = SG()
+    shot = sg.find_shot_by_task(task_id)
+
+    if shot["sg_status_list"] in valid_shot_statuses:
+        return shot, None
+    else:
+        updated_shot = sg.set_shot_status(shot["id"], valid_shot_statuses[0])
+        return shot, updated_shot
