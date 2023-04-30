@@ -1,5 +1,6 @@
 import json
 import sys
+import os
 
 from flask import Flask
 import werkzeug.exceptions
@@ -12,6 +13,7 @@ from .routes.webhooks import status
 
 
 DEFAULT_STATUS_MAPPING_FILEPATH = "status_mapping.yaml"
+WEBHOOK_SECRET_TOKEN_ENV_VAR_NAME = "SHOTGRID_SECRET_TOKEN"
 
 
 logger = get_logger(__name__)
@@ -37,6 +39,19 @@ def create_app():
         })
         response.content_type = "application/json"
         return response
+
+    try:
+        app.config["SECRET_TOKEN"] = os.environ[WEBHOOK_SECRET_TOKEN_ENV_VAR_NAME]
+    except KeyError:
+        print(
+            "Could not start application because of missing secret token.",
+            file=sys.stderr,
+        )
+        print(
+            f'Did you set the "{WEBHOOK_SECRET_TOKEN_ENV_VAR_NAME}" env var?',
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     try:
         app.config["STATUS_MAPPING"] = load_status_mapping(

@@ -7,6 +7,7 @@ from ...lib.logging import get_logger
 from ...lib.models.webhooks.status import WebhookBody
 from ...lib.sg import update_linked_tasks, update_linked_shot
 from ...lib.errors import UnknownStatusError
+from ...lib.secret import verify_signature
 
 
 logger = get_logger(__name__)
@@ -25,6 +26,24 @@ def unknown_status_error_response(unknown_status_error):
         "error": "Unknown Status",
         "description": str(unknown_status_error),
     }
+
+
+@bp.before_request
+def ensure_request_from_shotgrid():
+    if "x-sg-signature" not in request.headers:
+        return {
+            "error": "Authentication Error",
+            "description": 'You must provide the "x-sg-signature" header.',
+        }, 401
+
+    signature = request.headers["x-sg-signature"]
+    if not verify_signature(
+        request.get_data(), current_app.config["SECRET_TOKEN"], signature,
+    ):
+        return {
+            "error": "Authentication Error",
+            "description": "Request signature not valid.",
+        }, 401
 
 
 @bp.route("/shot", methods=("POST",))
