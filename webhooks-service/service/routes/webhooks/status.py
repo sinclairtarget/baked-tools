@@ -74,6 +74,9 @@ def handle_shot_status_change():
     except pydantic.ValidationError as e:
         return validation_error_response(e), 400
 
+    if webhook_post_body.is_test_connection:
+        return "", 204
+
     shot_id = webhook_post_body.data.entity.id
     project_id = webhook_post_body.data.project.id
     old_shot_status = webhook_post_body.data.meta.old_value
@@ -160,6 +163,9 @@ def handle_task_status_change():
         webhook_post_body = WebhookBody.parse_obj(post_body)
     except pydantic.ValidationError as e:
         return validation_error_response(e), 400
+
+    if webhook_post_body.is_test_connection:
+        return "", 204
 
     task_id = webhook_post_body.data.entity.id
     project_id = webhook_post_body.data.project.id
