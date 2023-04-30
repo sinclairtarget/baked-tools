@@ -83,15 +83,20 @@ def shot_status():
         + ", ".join(task_statuses)
     )
 
+    original_tasks, updated_tasks = update_linked_tasks(
+        project_id, shot_id, task_statuses,
+    )
+
+    logger.info(f"Updated {len(updated_tasks)} linked tasks.")
+
     now = datetime.now(timezone.utc)
     delay_seconds = (now - webhook_post_body.timestamp).total_seconds()
-    updated_tasks = update_linked_tasks(project_id, shot_id, task_statuses)
-
     return {
         "project_id": project_id,
         "shot_id": shot_id,
-        "lag_after_original_event_seconds": int(delay_seconds),
+        "lag_after_original_event_ms": int(delay_seconds * 1000),
         "old_shot_status": old_shot_status,
         "new_shot_status": new_shot_status,
-        "updated_tasks": updated_tasks
+        "original_tasks": original_tasks,
+        "updated_tasks": updated_tasks,
     }, 200

@@ -8,3 +8,7 @@ class ConfigurationError(BakedError):
 
 class UnknownStatusError(BakedError):
     pass
+
+
+class APIKeyNotFoundError(BakedError):
+    pass
