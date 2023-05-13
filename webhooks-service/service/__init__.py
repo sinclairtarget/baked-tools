@@ -20,7 +20,10 @@ logger = get_logger(__name__)
 
 
 def create_app():
-    configure_logging("INFO")
+    if "LOGFILE_PATH" in os.environ:
+        configure_logging("INFO", filename=os.environ["LOGFILE_PATH"])
+    else:
+        configure_logging("INFO")
 
     app = Flask(__name__)
 
