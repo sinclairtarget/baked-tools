@@ -172,8 +172,6 @@ task_to_shot:
     - final
 
 version_to_task:
-  na:
-    - adn
   cnv:
     - cnv
   cli:

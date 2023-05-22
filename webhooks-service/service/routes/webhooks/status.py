@@ -112,6 +112,10 @@ def handle_shot_status_change():
     except UnknownStatusError as e:
         return unknown_status_error_response(e), 400
 
+    if not task_statuses:
+        logger.info("Status not mapped to anything.")
+        return "", 204
+
     logger.info(
         "Updating linked tasks to a status that is one of: "
         + ", ".join(task_statuses)
@@ -201,6 +205,10 @@ def handle_task_status_change():
         )
     except UnknownStatusError as e:
         return unknown_status_error_response(e), 400
+
+    if not shot_statuses:
+        logger.info("Status not mapped to anything.")
+        return "", 204
 
     logger.info(
         "Updating linked shot to a status that is one of: "
