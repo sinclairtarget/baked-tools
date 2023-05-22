@@ -14,6 +14,7 @@ class ShotgridStatus(BaseModel):
 class StatusMapping(BaseModel):
     shot_statuses: conlist(ShotgridStatus, min_items=1)
     task_statuses: conlist(ShotgridStatus, min_items=1)
+    version_statuses: conlist(ShotgridStatus, min_items=1)
     shot_to_task: Dict[str, conlist(str, min_items=1)]
     task_to_shot: Dict[str, conlist(str, min_items=1)]
     version_to_task: Dict[str, conlist(str, min_items=1)]
