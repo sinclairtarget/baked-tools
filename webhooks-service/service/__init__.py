@@ -56,7 +56,7 @@ def create_app():
         sys.exit(1)
 
     try:
-        app.config["STATUS_MAPPING"] = load_status_mapping()
+        m = load_status_mapping()
     except ConfigurationError as e:
         print(
             "Could not start application because of a configuration issue:\n" +
@@ -64,6 +64,16 @@ def create_app():
             file=sys.stderr,
         )
         sys.exit(1)
+
+    if inconsistency := m.check_inconsistent():
+        print(
+            "Could not start application because status mapping was inconsistent:\n" +
+            inconsistency,
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    app.config["STATUS_MAPPING"] = m
 
     logger.info("Application created.")
     return app

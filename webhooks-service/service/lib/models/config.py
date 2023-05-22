@@ -113,6 +113,20 @@ class StatusMapping(BaseModel):
         return version_to_task
 
 
+    def check_inconsistent(self):
+        """
+        Returns True if the status mapping isn't self-consistent.
+        """
+        for shot_status in self.shot_statuses:
+            task_statuses = self.shot_to_task[shot_status.key]
+            for task_status in task_statuses:
+                shot_statuses = self.task_to_shot[task_status]
+                if shot_statuses and shot_status.key not in shot_statuses:
+                    return f"{shot_status.key} -> {task_status} -> {shot_statuses[0]}"
+
+        return None
+
+
     def map_shot_status(self, shot_status):
         try:
             task_statuses = self.shot_to_task[shot_status]
