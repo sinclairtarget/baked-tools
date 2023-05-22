@@ -5,12 +5,20 @@ shot_statuses:
     label: Bidding
   - key: hld
     label: On Hold
+  - key: repull
+    label: Re-Pull
   - key: media
     label: Awaiting Media
   - key: awa
     label: Awaiting Assignment
   - key: actv
     label: Active
+  - key: rev
+    label: Pending Client Review
+  - key: apv
+    label: Client Approved
+  - key: di
+    label: Delivered to DI
   - key: final
     label: Final
 
@@ -30,37 +38,25 @@ task_statuses:
   - key: ncl
     label: Needs Clarification
   - key: ofr
-    label: Out For Roto
+    label: Out For Roto/Paint
   - key: bfr
-    label: Back From Roto
-  - key: ofp
-    label: Out For Paint
-  - key: bfp
-    label: Back From Paint
+    label: Back From Roto/Paint
   - key: stc
     label: Step Completed
   - key: cnv
     label: Check New Version
   - key: cli
     label: Send to Client
+  - key: adn
+    label: Address New Notes
   - key: qckbk
     label: QC Clickback
   - key: rev
     label: Pending Client Review
-  - key: adn
-    label: Address New Notes
-  - key: rdypro
-    label: Ready for ProRes
-  - key: pro
-    label: PRORES Delivered
   - key: hires
     label: Ready for HiRes
   - key: dlh
     label: Delivered HiRes
-  - key: sndexr
-    label: Ready for EXR
-  - key: exr
-    label: EXR Delivered
   - key: di
     label: Delivered to DI
 
@@ -91,6 +87,8 @@ shot_to_task:
     - wtg
   hld:
     - hld
+  repull:
+    - wtg
   media:
     - wtg
   awa:
@@ -102,21 +100,12 @@ shot_to_task:
     - ncl
     - ofr
     - bfr
-    - ofp
-    - bfp
     - stc
     - cnv
     - cli
-    - qckbk
-    - rev
     - adn
-    - rdypro
-    - pro
-    - hires
-    - dlh
-    - sndexr
-    - exr
-  final:
+    - qckbk
+  di:
     - di
 
 task_to_shot:
@@ -124,10 +113,6 @@ task_to_shot:
     - omt
   hld:
     - hld
-  wtg:
-    - media
-    - bid
-    - awa
   rdy:
     - actv
   per:
@@ -140,36 +125,22 @@ task_to_shot:
     - actv
   bfr:
     - actv
-  ofp:
-    - actv
-  bfp:
-    - actv
   stc:
     - actv
   cnv:
     - actv
   cli:
     - actv
+  adn:
+    - actv
   qckbk:
     - actv
   rev:
-    - actv
-  adn:
-    - actv
-  rdypro:
-    - actv
-  pro:
-    - actv
+    - rev
   hires:
-    - actv
-  dlh:
-    - actv
-  sndexr:
-    - actv
-  exr:
-    - actv
+    - apv
   di:
-    - final
+    - di
 
 version_to_task:
   cnv:
