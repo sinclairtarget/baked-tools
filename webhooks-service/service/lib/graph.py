@@ -32,6 +32,10 @@ def _get_map_func(status_mapping, source_status_type, target_status_type):
         )
 
 
+def _label(status_type):
+    return f"{status_type.capitalize()} Status"
+
+
 def render_mapping(status_mapping, source_status_type, target_status_type):
     source_statuses = _get_statuses(status_mapping, source_status_type)
     target_statuses = _get_statuses(status_mapping, target_status_type)
@@ -45,7 +49,7 @@ def render_mapping(status_mapping, source_status_type, target_status_type):
     g.attr("graph", rankdir="LR")
 
     with g.subgraph(name="cluster_source") as c:
-        c.attr(style="filled", color="lightgrey")
+        c.attr(style="filled", color="lightgrey", label=_label(source_status_type))
         for status in source_statuses:
             c.node(_node_key(source_status_type, status.key), status.label)
 
@@ -58,7 +62,7 @@ def render_mapping(status_mapping, source_status_type, target_status_type):
                 )
 
     with g.subgraph(name="cluster_target") as c:
-        c.attr(style="filled", color="lightgrey", label="Task Statuses")
+        c.attr(style="filled", color="lightgrey", label=_label(target_status_type))
         for status in target_statuses:
             c.node(_node_key(target_status_type, status.key), status.label)
 
