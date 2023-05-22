@@ -15,9 +15,9 @@ class StatusMapping(BaseModel):
     shot_statuses: conlist(ShotgridStatus, min_items=1)
     task_statuses: conlist(ShotgridStatus, min_items=1)
     version_statuses: conlist(ShotgridStatus, min_items=1)
-    shot_to_task: Dict[str, conlist(str, min_items=1)]
-    task_to_shot: Dict[str, conlist(str, min_items=1)]
-    version_to_task: Dict[str, conlist(str, min_items=1)]
+    shot_to_task: Dict[str, conlist(str)]
+    task_to_shot: Dict[str, conlist(str)]
+    version_to_task: Dict[str, conlist(str)]
 
     @validator("shot_to_task")
     def shot_to_task_is_valid(cls, shot_to_task, values):
@@ -26,11 +26,8 @@ class StatusMapping(BaseModel):
             existing_statuses = set(v.key for v in values["shot_statuses"])
 
             unmapped_statuses = existing_statuses - mapped_statuses
-            if unmapped_statuses:
-                raise ValueError(
-                    "The following shot statuses were not mapped to any task "
-                    "statuses: " + ", ".join(unmapped_statuses)
-                )
+            for s in unmapped_statuses:
+                shot_to_task[s] = []
 
             nonexistent_statuses = mapped_statuses - existing_statuses
             if nonexistent_statuses:
@@ -60,11 +57,8 @@ class StatusMapping(BaseModel):
             existing_statuses = set(v.key for v in values["task_statuses"])
 
             unmapped_statuses = existing_statuses - mapped_statuses
-            if unmapped_statuses:
-                raise ValueError(
-                    "The following task statuses were not mapped to any shot "
-                    "statuses: " + ", ".join(unmapped_statuses)
-                )
+            for s in unmapped_statuses:
+                task_to_shot[s] = []
 
             nonexistent_statuses = mapped_statuses - existing_statuses
             if nonexistent_statuses:
@@ -94,11 +88,8 @@ class StatusMapping(BaseModel):
             existing_statuses = set(v.key for v in values["version_statuses"])
 
             unmapped_statuses = existing_statuses - mapped_statuses
-            if unmapped_statuses:
-                raise ValueError(
-                    "The following version statuses were not mapped to any task "
-                    "statuses: " + ", ".join(unmapped_statuses)
-                )
+            for s in unmapped_statuses:
+                version_to_task[s] = []
 
             nonexistent_statuses = mapped_statuses - existing_statuses
             if nonexistent_statuses:
