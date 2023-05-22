@@ -305,6 +305,23 @@ def handle_version_status_change():
         logger.info("Linked task did not need to be changed.")
     else:
         logger.info("Updated linked task.")
+        shot_statuses = current_app.config["STATUS_MAPPING"].map_task_status(
+            updated_task["sg_status_list"]
+        )
+
+        if shot_statuses:
+            logger.info(
+                "Also updating linked shot to a status that is one of: "
+                + ", ".join(shot_statuses)
+            )
+            _, updated_shot = update_linked_shot(
+                project_id, updated_task["id"], shot_statuses,
+            )
+            if updated_shot is None:
+                logger.info("Linked shot did not need to be changed.")
+            else:
+                logger.info("Updated linked shot.")
+
 
     now = datetime.now(timezone.utc)
     delay_second = (now - g.webhook.timestamp).total_seconds()
