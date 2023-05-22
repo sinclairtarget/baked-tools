@@ -21,12 +21,17 @@ class AttributeChangeMeta(BaseModel):
     old_value: Optional[str] = None
     new_value: Optional[str] = None
 
+class User(BaseModel):
+    id: int
+    type: str
+
 
 class WebhookData(BaseModel):
     event_type: str
     entity: Entity
     project: Project
     meta : AttributeChangeMeta
+    user: User
 
 
 class WebhookBody(BaseModel):

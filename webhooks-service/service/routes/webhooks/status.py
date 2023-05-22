@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, current_app, g
 import pydantic
 
 from ...lib.logging import get_logger
@@ -46,6 +46,23 @@ def ensure_request_from_shotgrid():
         }, 401
 
 
+@bp.before_request
+def handle_webhook():
+    post_body = request.get_json()
+
+    try:
+        webhook_post_body = WebhookBody.parse_obj(post_body)
+    except pydantic.ValidationError as e:
+        return validation_error_response(e), 400
+
+    g.webhook = webhook_post_body
+    if g.webhook.is_test_connection:
+        return "", 204
+
+    if g.webhook.user.type != "HumanUser":
+        return "", 204
+
+
 @bp.route("/shot", methods=("POST",))
 def handle_shot_status_change():
     """
@@ -86,20 +103,10 @@ def handle_shot_status_change():
       "timestamp": "2023-04-22T21:14:43Z"
     }
     """
-    post_body = request.get_json()
-
-    try:
-        webhook_post_body = WebhookBody.parse_obj(post_body)
-    except pydantic.ValidationError as e:
-        return validation_error_response(e), 400
-
-    if webhook_post_body.is_test_connection:
-        return "", 204
-
-    shot_id = webhook_post_body.data.entity.id
-    project_id = webhook_post_body.data.project.id
-    old_shot_status = webhook_post_body.data.meta.old_value
-    new_shot_status = webhook_post_body.data.meta.new_value
+    shot_id = g.webhook.data.entity.id
+    project_id = g.webhook.data.project.id
+    old_shot_status = g.webhook.data.meta.old_value
+    new_shot_status = g.webhook.data.meta.new_value
     logger.info(
         f'Shot {shot_id} was updated from status "{old_shot_status}" to '
         f'"{new_shot_status}" in project {project_id}.'
@@ -128,7 +135,7 @@ def handle_shot_status_change():
     logger.info(f"Updated {len(updated_tasks)} linked tasks.")
 
     now = datetime.now(timezone.utc)
-    delay_seconds = (now - webhook_post_body.timestamp).total_seconds()
+    delay_seconds = (now - g.webhook.timestamp).total_seconds()
     return {
         "project_id": project_id,
         "shot_id": shot_id,
@@ -180,20 +187,10 @@ def handle_task_status_change():
       "timestamp": "2023-04-30T15:49:01Z"
     }
     """
-    post_body = request.get_json()
-
-    try:
-        webhook_post_body = WebhookBody.parse_obj(post_body)
-    except pydantic.ValidationError as e:
-        return validation_error_response(e), 400
-
-    if webhook_post_body.is_test_connection:
-        return "", 204
-
-    task_id = webhook_post_body.data.entity.id
-    project_id = webhook_post_body.data.project.id
-    old_task_status = webhook_post_body.data.meta.old_value
-    new_task_status = webhook_post_body.data.meta.new_value
+    task_id = g.webhook.data.entity.id
+    project_id = g.webhook.data.project.id
+    old_task_status = g.webhook.data.meta.old_value
+    new_task_status = g.webhook.data.meta.new_value
     logger.info(
         f'Task {task_id} was updated from status "{old_task_status}" to '
         f'"{new_task_status}" in project {project_id}.'
@@ -225,7 +222,7 @@ def handle_task_status_change():
         logger.info("Updated linked shot.")
 
     now = datetime.now(timezone.utc)
-    delay_second = (now - webhook_post_body.timestamp).total_seconds()
+    delay_second = (now - g.webhook.timestamp).total_seconds()
     return {
         "project_id": project_id,
         "task_id": task_id,
