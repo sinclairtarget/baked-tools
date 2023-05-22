@@ -105,6 +105,7 @@ class SG:
                 "updated_by",
                 "sg_status_list",
                 "sg_link_to_shot",
+                "sg_task",
             ]
         )
 
@@ -193,3 +194,17 @@ def update_linked_shot(project_id, task_id, valid_shot_statuses):
     else:
         updated_shot = sg.set_shot_status(shot["id"], valid_shot_statuses[0])
         return shot, updated_shot
+
+
+def update_linked_task(project_id, version_id, valid_task_statuses):
+    sg = SG()
+    version = sg.find_version(version_id)
+
+    task_id = version["sg_task"]["id"]
+    task = sg.find_task(task_id)
+
+    if task["sg_status_list"] in valid_task_statuses:
+        return task, None
+    else:
+        updated_tasks = sg.set_task_status([task_id], valid_task_statuses[0])
+        return task, updated_tasks[0]
