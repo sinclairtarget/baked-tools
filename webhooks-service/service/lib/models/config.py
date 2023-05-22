@@ -16,6 +16,7 @@ class StatusMapping(BaseModel):
     task_statuses: conlist(ShotgridStatus, min_items=1)
     shot_to_task: Dict[str, conlist(str, min_items=1)]
     task_to_shot: Dict[str, conlist(str, min_items=1)]
+    version_to_task: Dict[str, conlist(str, min_items=1)]
 
     @validator("shot_to_task")
     def shot_to_task_is_valid(cls, shot_to_task, values):
@@ -85,6 +86,41 @@ class StatusMapping(BaseModel):
 
         return task_to_shot
 
+    @validator("version_to_task")
+    def version_to_task_is_valid(cls, version_to_task, values):
+        if "version_statuses" in values:
+            mapped_statuses = set(version_to_task.keys())
+            existing_statuses = set(v.key for v in values["version_statuses"])
+
+            unmapped_statuses = existing_statuses - mapped_statuses
+            if unmapped_statuses:
+                raise ValueError(
+                    "The following version statuses were not mapped to any task "
+                    "statuses: " + ", ".join(unmapped_statuses)
+                )
+
+            nonexistent_statuses = mapped_statuses - existing_statuses
+            if nonexistent_statuses:
+                raise ValueError(
+                    "The following version statuses were mapped but do not exist: "
+                    + ", ".join(nonexistent_statuses)
+                )
+
+        if "task_statuses" in values:
+            output_statuses = set(
+                reduce(list.__add__, (v for v in version_to_task.values()))
+            )
+            existing_statuses = set(v.key for v in values["task_statuses"])
+            nonexistent_statuses = output_statuses - existing_statuses
+            if nonexistent_statuses:
+                raise ValueError(
+                    "The following task statuses were mapped to but do not "
+                    "exist: " + ", ".join(nonexistent_statuses)
+                )
+
+        return version_to_task
+
+
     def map_shot_status(self, shot_status):
         try:
             task_statuses = self.shot_to_task[shot_status]
@@ -105,3 +141,14 @@ class StatusMapping(BaseModel):
             ) from e
 
         return shot_statuses
+
+
+    def map_version_status(self, version_status):
+        try:
+            task_statuses = self.version_to_task[version_status]
+        except KeyError as e:
+            raise UnknownStatusError(
+                f'Unknown version status: "{version_status}".'
+            ) from e
+
+        return task_statuses

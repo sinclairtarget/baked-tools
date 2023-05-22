@@ -64,6 +64,26 @@ task_statuses:
   - key: di
     label: Delivered to DI
 
+version_statuses:
+  - key: na
+    label: N/A
+  - key: cnv
+    label: Check New Version
+  - key: cli
+    label: Sent to Client
+  - key: bkdn
+    label: BKD Note
+  - key: qckbk
+    label: QC Kickback
+  - key: rev
+    label: Pending Client Review
+  - key: note
+    label: Client Note
+  - key: hero
+    label: Hero Shot
+  - key: apv
+    label: Client Approved
+
 shot_to_task:
   omt:
     - omt
@@ -150,3 +170,21 @@ task_to_shot:
     - actv
   di:
     - final
+
+version_to_task:
+  cnv:
+    - cnv
+  cli:
+    - cli
+  bkdn:
+    - adn
+  qckbk:
+    - qckbk
+  rev:
+    - rev
+  note:
+    - adn
+  hero:
+    - hires
+  apv:
+    - hires
