@@ -12,7 +12,6 @@ from .routes import health
 from .routes.webhooks import status
 
 
-DEFAULT_STATUS_MAPPING_FILEPATH = "status_mapping.yaml"
 WEBHOOK_SECRET_TOKEN_ENV_VAR_NAME = "SHOTGRID_SECRET_TOKEN"
 
 
@@ -57,9 +56,7 @@ def create_app():
         sys.exit(1)
 
     try:
-        app.config["STATUS_MAPPING"] = load_status_mapping(
-            DEFAULT_STATUS_MAPPING_FILEPATH
-        )
+        app.config["STATUS_MAPPING"] = load_status_mapping()
     except ConfigurationError as e:
         print(
             "Could not start application because of a configuration issue:\n" +

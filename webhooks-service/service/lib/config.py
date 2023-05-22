@@ -5,7 +5,10 @@ from .models.config import StatusMapping
 from .errors import ConfigurationError
 
 
-def load_status_mapping(filepath):
+DEFAULT_STATUS_MAPPING_FILEPATH = "status_mapping.yaml"
+
+
+def load_status_mapping(filepath=DEFAULT_STATUS_MAPPING_FILEPATH):
     try:
         with open(filepath, "rt") as f:
             data = yaml.safe_load(f)
