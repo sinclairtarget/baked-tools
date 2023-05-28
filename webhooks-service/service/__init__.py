@@ -9,7 +9,7 @@ from .lib.logging import configure_logging, get_logger
 from .lib.config import load_status_mapping
 from .lib.errors import ConfigurationError
 from .routes import health
-from .routes.webhooks import status
+from .routes.webhooks import status, sheets
 
 
 WEBHOOK_SECRET_TOKEN_ENV_VAR_NAME = "SHOTGRID_SECRET_TOKEN"
@@ -28,6 +28,7 @@ def create_app():
 
     app.register_blueprint(health.bp)
     app.register_blueprint(status.bp, url_prefix="/webhooks/status")
+    app.register_blueprint(sheets.bp, url_prefix="/webhooks/sheets")
 
     @app.errorhandler(werkzeug.exceptions.HTTPException)
     def handle_exception(e):

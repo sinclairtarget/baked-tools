@@ -31,6 +31,19 @@ class SG:
             api_key=self._api_key,
         )
 
+    def list_all_projects(self):
+        return self._api.find("Project", [], ["id", "name"])
+
+    def resolve_project_id(self, name):
+        projects = { p["name"].lower(): p for p in self.list_all_projects() }
+
+        if name.lower() not in projects:
+            raise ProjectNotFoundError(
+                name, list(p["name"] for p in projects.values()),
+            )
+
+        return projects[name.lower()]["id"]
+
     def find_shot(self, shot_id):
         return self._api.find_one(
             "Shot",
@@ -69,6 +82,30 @@ class SG:
                 "sg_status_list",
                 "tasks",
             ]
+        )
+
+    def list_shots(self, project_id):
+        return self._api.find(
+            "Shot",
+            [["project", "is", { "type": "Project", "id": project_id }]],
+            [
+                "id",
+                "cached_display_name",
+                "project",
+                "code",
+                "sg_status_list",
+                "sg_turnover_notes",
+                "sg_delivery_notes",
+                "created_at",
+                "created_by",
+                "updated_at",
+                "updated_by",
+                "description",
+                "sg_latest_version",
+                "sg_versions",
+                "version_sg_link_to_shot_versions",
+                "user",
+            ],
         )
 
     def find_task(self, task_id):
