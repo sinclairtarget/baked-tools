@@ -54,6 +54,9 @@ class SG:
                 "cached_display_name",
                 "project",
                 "code",
+                "sg_status_list",
+                "sg_turnover_notes",
+                "sg_delivery_notes",
                 "created_at",
                 "created_by",
                 "updated_at",
@@ -63,7 +66,7 @@ class SG:
                 "sg_versions",
                 "version_sg_link_to_shot_versions",
                 "user",
-            ]
+            ],
         )
 
     def list_versions(self, project_id):

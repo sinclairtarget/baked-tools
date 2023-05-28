@@ -3,6 +3,7 @@ import argparse
 import logging
 
 from . import MAINTAINER, __version__, uploader
+from .sheet_sync import sync
 from .lib.logging import configure_logging
 
 
@@ -17,6 +18,11 @@ def run_upload(args):
     success = uploader.upload_movies(
         args.project_name, args.movie_filepaths, args.dry_run,
     )
+    sys.exit(0 if success else 1)
+
+
+def run_sync(args):
+    success = sync(args.project_name)
     sys.exit(0 if success else 1)
 
 
@@ -67,6 +73,20 @@ Baked command-line tool for Shotgrid. For more help, contact {MAINTAINER}.
         help="Use this option to test the tool without actually uploading anything.",
     )
     upload_subparser.set_defaults(func=run_upload)
+
+    # =========================================================================
+    # Google Sheet Shot Status Sync
+    # =========================================================================
+    sync_subparser = subparsers.add_parser(
+        "sync", help="Sync shots data with Google sheet"
+    )
+    sync_subparser.add_argument(
+        "project_name",
+        type=str,
+        help="Project name.",
+    )
+    sync_subparser.set_defaults(func=run_sync)
+
     # =========================================================================
 
     args = parser.parse_args()
