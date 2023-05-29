@@ -48,22 +48,21 @@ class GoogleSheetsClient:
             "Turnover Notes",
             "Delivery Notes",
         ]
-        worksheet.append_row(header_row)
 
-        for shot in shots:
-            row = [
+        shot_rows = [
+            [
                 shot["code"],
                 shot["description"],
                 shot["sg_status_list"],
                 shot["sg_turnover_notes"],
                 shot["sg_delivery_notes"],
             ]
-            worksheet.append_row(row)
+            for shot in shots
+        ]
 
         # Add a timestamp to the bottom of the data
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        worksheet.append_row(
-            ["", "", "", "", "", "", f"Last updated on {timestamp}"]
-        )
+        timestamp_row = ["", "", "", "", "", "", f"Last updated on {timestamp}"]
 
+        worksheet.append_rows([header_row, *shot_rows, timestamp_row])
         return True
