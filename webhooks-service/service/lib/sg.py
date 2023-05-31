@@ -146,8 +146,9 @@ class SG:
             ]
         )
 
-
     def find_tasks(self, task_ids):
+        assert task_ids
+
         filters = [{
             "filter_operator": "any",
             "filters": [["id", "is", task_id] for task_id in task_ids]
@@ -199,6 +200,10 @@ def update_linked_tasks(project_id, shot_id, valid_task_statuses):
     shot = sg.find_shot(shot_id)
 
     linked_task_ids = [t["id"] for t in shot["tasks"]]
+    if not linked_task_ids:
+        logger.warn(f"No linked tasks found for shot {shot_id}.")
+        return [], []
+
     linked_tasks = sg.find_tasks(linked_task_ids)
     tasks_to_update = [
         t for t in linked_tasks
@@ -209,7 +214,6 @@ def update_linked_tasks(project_id, shot_id, valid_task_statuses):
         (t["id"] for t in tasks_to_update),
         valid_task_statuses[0]
     )
-
     return tasks_to_update, updated_tasks
 
 
