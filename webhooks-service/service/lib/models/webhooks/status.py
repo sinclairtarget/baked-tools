@@ -17,6 +17,10 @@ class Project(BaseModel):
     id: int
 
 
+class TestConnectionMeta(BaseModel):
+    type: Literal["test_connection"]
+
+
 class AttributeChangeMeta(BaseModel):
     type: Literal["attribute_change"]
     old_value: Optional[str] = None
@@ -38,7 +42,9 @@ class WebhookData(BaseModel):
     event_type: str
     entity: Entity
     project: Project
-    meta: Union[AttributeChangeMeta, NewEntityMeta] = Field(..., descriminator="type")
+    meta: Union[
+        AttributeChangeMeta, NewEntityMeta, TestConnectionMeta,
+    ] = Field(..., descriminator="type")
     user: User
 
 
