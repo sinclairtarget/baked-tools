@@ -3,7 +3,7 @@ import logging
 
 import shotgun_api3
 
-from .errors import APIKeyNotFoundError
+from .errors import APIKeyNotFoundError, ProjectNotFoundError
 
 
 logger = logging.getLogger(__name__)
