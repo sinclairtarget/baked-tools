@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union, Literal
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
 
 
 TEST_CONNECTION_EVENT_TYPE = "Test_Connection"
@@ -18,8 +18,16 @@ class Project(BaseModel):
 
 
 class AttributeChangeMeta(BaseModel):
+    type: Literal["attribute_change"]
     old_value: Optional[str] = None
     new_value: Optional[str] = None
+
+
+class NewEntityMeta(BaseModel):
+    type: Literal["new_entity"]
+    entity_type: str
+    entity_id: int
+
 
 class User(BaseModel):
     id: int
@@ -30,7 +38,7 @@ class WebhookData(BaseModel):
     event_type: str
     entity: Entity
     project: Project
-    meta : AttributeChangeMeta
+    meta: Union[AttributeChangeMeta, NewEntityMeta] = Field(..., descriminator="type")
     user: User
 
 
@@ -44,11 +52,12 @@ class WebhookBody(BaseModel):
             if not data.entity.type:
                 raise ValueError("Entity needs type.")
 
-            if not data.meta.old_value:
-                raise ValueError("Attribute change meta needs old value.")
+            if data.meta.type == "attribute_change":
+                if not data.meta.old_value:
+                    raise ValueError("Attribute change meta needs old value.")
 
-            if not data.meta.new_value:
-                raise ValueError("Attribute change meta needs new value.")
+                if not data.meta.new_value:
+                    raise ValueError("Attribute change meta needs new value.")
 
         return data
 
