@@ -75,6 +75,8 @@ version_statuses:
     label: Pending Client Review
   - key: note
     label: Client Note
+  - key: stc
+    label: Step Completed
   - key: hero
     label: Hero Shot
   - key: apv
@@ -155,6 +157,8 @@ version_to_task:
     - rev
   note:
     - adn
+  stc:
+    - stc
   hero:
     - hires
   apv:
