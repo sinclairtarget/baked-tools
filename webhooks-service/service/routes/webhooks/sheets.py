@@ -51,7 +51,7 @@ def trigger_sync():
 
     logger.info("Syncing with Google sheets...")
     gc = GoogleSheetsClient()
-    success = gc.sync_shots_to_spreadsheet(project_name, shots)
+    success = gc.sync_shots_to_spreadsheet(spreadsheet_name, shots)
 
     end_time = time.perf_counter()
     logger.info(f"Done in {end_time - start_time:0.2f} seconds.")

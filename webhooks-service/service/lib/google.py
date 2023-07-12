@@ -24,8 +24,7 @@ class GoogleSheetsClient:
             print(f"Expected to find file at path: {SERVICE_ACCOUNT_JSON_KEYFILE_PATH}", file=sys.stderr)
             raise GoogleCredentialsNotFoundError("Could not find JSON keyfile.")
 
-    def sync_shots_to_spreadsheet(self, project_name, shots):
-        spreadsheet_name = f"{project_name}_Baked_Live_Tracking"
+    def sync_shots_to_spreadsheet(self, spreadsheet_name, shots):
         logger.info(f"Updating spreadsheet {spreadsheet_name}...")
 
         try:
