@@ -20,21 +20,30 @@ class GoogleSheetsClient:
         try:
             self._g = gspread.service_account(filename=path)
         except FileNotFoundError as e:
-            print("Could not find service account JSON keyfile.", file=sys.stderr)
-            print(f"Expected to find file at path: {SERVICE_ACCOUNT_JSON_KEYFILE_PATH}", file=sys.stderr)
+            logger.error("Could not find service account JSON keyfile.")
+            logger.error(f"Expected to find file at path: {SERVICE_ACCOUNT_JSON_KEYFILE_PATH}")
             raise GoogleCredentialsNotFoundError("Could not find JSON keyfile.")
 
-    def sync_shots_to_spreadsheet(self, spreadsheet_name, shots):
-        logger.info(f"Updating spreadsheet {spreadsheet_name}...")
+    def sync_shots_to_spreadsheet(self, spreadsheet_id, shots):
+        logger.info(f"Updating spreadsheet with ID {spreadsheet_id}...")
 
         try:
-            spreadsheet = self._g.open(spreadsheet_name)
+            spreadsheet = self._g.open_by_key(spreadsheet_id)
         except gspread.exceptions.SpreadsheetNotFound:
-            print(f"Spreadsheet not found: {spreadsheet_name}", file=sys.stderr)
-            return False
+            msg = f"Spreadsheet not found with ID: {spreadsheet_id}"
+            logger.error(msg)
+            return False, msg
+        except gspread.exceptions.APIError as e:
+            try:
+                status = e.response.json()["error"]["status"]
+            except:
+                status = "Unknown"
 
-        sheet_name = 'Sheet2'
-        worksheet = spreadsheet.worksheet(sheet_name)
+            msg = f"Got Google Sheets API error: {status}"
+            logger.error(msg)
+            return False, msg
+
+        worksheet = spreadsheet.get_worksheet(1)
 
         # Clear the existing data from the worksheet
         worksheet.clear()
@@ -64,4 +73,4 @@ class GoogleSheetsClient:
         timestamp_row = ["", "", "", "", "", "", f"Last updated on {timestamp}"]
 
         worksheet.append_rows([header_row, *shot_rows, timestamp_row])
-        return True
+        return True, None

@@ -23,10 +23,11 @@ def trigger_sync():
 
     try:
         spreadsheet_name = post_body["spreadsheet_name"]
-    except KeyError:
-        return {
-            "message": 'Missing key "spreadsheet_name".'
-        }, 400
+        spreadsheet_id = post_body["spreadsheet_id"]
+    except KeyError as e:
+        msg = f"Request was missing key: {e}"
+        logger.error(msg)
+        return { "message": msg }, 400
 
 
     start_time = time.perf_counter()
@@ -40,9 +41,9 @@ def trigger_sync():
     try:
         project_id = sg.resolve_project_id(project_name)
     except ProjectNotFoundError as e:
-        return {
-            "message": f'Project "{e.project_name}" not found.'
-        }, 400
+        msg = f'Project "{e.project_name}" not found.'
+        logger.error(msg)
+        return { "message": msg }, 400
 
     logger.info(f"Found project ID: {project_id}")
 
@@ -51,9 +52,14 @@ def trigger_sync():
 
     logger.info("Syncing with Google sheets...")
     gc = GoogleSheetsClient()
-    success = gc.sync_shots_to_spreadsheet(spreadsheet_name, shots)
+    success, err = gc.sync_shots_to_spreadsheet(spreadsheet_id, shots)
 
     end_time = time.perf_counter()
     logger.info(f"Done in {end_time - start_time:0.2f} seconds.")
 
-    return "", 204 if success else 502
+    if not success:
+        msg = f"Could not sync with Google sheets: {err}"
+        logger.error(msg)
+        return { "message": msg }, 502
+
+    return "", 204
