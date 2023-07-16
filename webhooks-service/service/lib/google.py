@@ -68,10 +68,12 @@ class GoogleSheetsClient:
         except gspread.exceptions.APIError as e:
             try:
                 status = e.response.json()["error"]["status"]
+                google_msg = e.response.json()["error"]["message"]
             except:
                 status = "Unknown"
+                google_msg = "Unknown"
 
-            msg = f"Got Google Sheets API error: {status}"
+            msg = f"Got Google Sheets API error {status}: {google_msg}"
             logger.error(msg)
             return False, msg
 
