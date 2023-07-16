@@ -28,11 +28,43 @@ class GoogleSheetsClient:
         logger.info(f"Updating spreadsheet with ID {spreadsheet_id}...")
 
         try:
-            spreadsheet = self._g.open_by_key(spreadsheet_id)
-        except gspread.exceptions.SpreadsheetNotFound:
-            msg = f"Spreadsheet not found with ID: {spreadsheet_id}"
-            logger.error(msg)
-            return False, msg
+            try:
+                spreadsheet = self._g.open_by_key(spreadsheet_id)
+            except gspread.exceptions.SpreadsheetNotFound:
+                msg = f"Spreadsheet not found with ID: {spreadsheet_id}"
+                logger.error(msg)
+                return False, msg
+
+            worksheet = spreadsheet.get_worksheet(1)
+
+            # Clear the existing data from the worksheet
+            worksheet.clear()
+
+            # Populate the Google Sheet with the ShotGrid data
+            header_row = [
+                "Code",
+                "Description",
+                "Status",
+                "Turnover Notes",
+                "Delivery Notes",
+            ]
+
+            shot_rows = [
+                [
+                    shot["code"],
+                    shot["description"],
+                    shot["sg_status_list"],
+                    shot["sg_turnover_notes"],
+                    shot["sg_delivery_notes"],
+                ]
+                for shot in shots
+            ]
+
+            # Add a timestamp to the bottom of the data
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            timestamp_row = ["", "", "", "", "", "", f"Last updated on {timestamp}"]
+
+            worksheet.append_rows([header_row, *shot_rows, timestamp_row])
         except gspread.exceptions.APIError as e:
             try:
                 status = e.response.json()["error"]["status"]
@@ -43,34 +75,4 @@ class GoogleSheetsClient:
             logger.error(msg)
             return False, msg
 
-        worksheet = spreadsheet.get_worksheet(1)
-
-        # Clear the existing data from the worksheet
-        worksheet.clear()
-
-        # Populate the Google Sheet with the ShotGrid data
-        header_row = [
-            "Code",
-            "Description",
-            "Status",
-            "Turnover Notes",
-            "Delivery Notes",
-        ]
-
-        shot_rows = [
-            [
-                shot["code"],
-                shot["description"],
-                shot["sg_status_list"],
-                shot["sg_turnover_notes"],
-                shot["sg_delivery_notes"],
-            ]
-            for shot in shots
-        ]
-
-        # Add a timestamp to the bottom of the data
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        timestamp_row = ["", "", "", "", "", "", f"Last updated on {timestamp}"]
-
-        worksheet.append_rows([header_row, *shot_rows, timestamp_row])
         return True, None
