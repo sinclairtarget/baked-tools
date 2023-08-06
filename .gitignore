@@ -6,3 +6,4 @@ data/
 *.zip
 *.gv
 *.gv.png
+.DS_Store
