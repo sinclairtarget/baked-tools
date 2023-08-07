@@ -15,7 +15,7 @@ for dir in In/*;
 do
     dir=${dir%*/}
     base=$(basename $dir)
-    ffmpeg -r 24 -f image2 -start_number 1001 -i "$dir/${base}.%04d.exr"\
+    ffmpeg -y gamma 2.2 -r 24 -f image2 -start_number 1001 -i "$dir/${base}.%04d.exr"\
         -c:v prores -vf "scale=1920:1080,fps=24,format=yuv422p"\
         Out/${dir##*/}.mov
 done
