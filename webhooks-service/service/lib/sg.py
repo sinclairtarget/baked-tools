@@ -179,14 +179,12 @@ class SG:
 
     def set_shot_status(self, shot_id, new_status):
         data = {
-            "shots": [{ "type": "Shot", "id": shot_id }],
             "sg_status_list": new_status,
         }
         return self._api.update("Shot", shot_id, data)
 
     def set_version_status(self, version_id, new_status):
         data = {
-            "versions": [{ "type": "Version", "id": version_id }],
             "sg_status_list": new_status,
         }
         return self._api.update("Version", version_id, data)

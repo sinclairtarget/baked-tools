@@ -379,7 +379,7 @@ def handle_version_created():
 
     sg = SG()
     version = sg.find_version(version_id)
-    if version["code"].lower().startswith("qr_"):
+    if version["cached_display_name"].lower().startswith("qr_"):
         logger.info(f"Ensuring version {version_id} has status CNV.")
         sg.set_version_status(version_id, "cnv")
         version_status = "cnv"
