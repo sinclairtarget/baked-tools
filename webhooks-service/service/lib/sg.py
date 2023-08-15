@@ -184,6 +184,13 @@ class SG:
         }
         return self._api.update("Shot", shot_id, data)
 
+    def set_version_status(self, version_id, new_status):
+        data = {
+            "versions": [{ "type": "Version", "id": version_id }],
+            "sg_status_list": new_status,
+        }
+        return self._api.update("Version", version_id, data)
+
 
 def update_linked_tasks(project_id, shot_id, valid_task_statuses):
     """

@@ -375,11 +375,16 @@ def handle_version_created():
     """
     version_id = g.webhook.data.entity.id
     project_id = g.webhook.data.project.id
-    logger.info(f"Version {version_id} was created project {project_id}.")
+    logger.info(f"Version {version_id} was created in project {project_id}.")
 
     sg = SG()
     version = sg.find_version(version_id)
-    version_status = version["sg_status_list"]
+    if version["code"].lower().startswith("qr_"):
+        logger.info(f"Ensuring version {version_id} has status CNV.")
+        sg.set_version_status(version_id, "cnv")
+        version_status = "cnv"
+    else:
+        version_status = version["sg_status_list"]
 
     try:
         task_statuses = current_app.config["STATUS_MAPPING"].map_version_status(
