@@ -59,6 +59,10 @@ task_statuses:
     label: Delivered HiRes
   - key: di
     label: Delivered to DI
+  - key: rff
+    label: Ready for Formats
+  - key: rqc
+    label: Ready for QC
 
 version_statuses:
   - key: na
@@ -81,6 +85,10 @@ version_statuses:
     label: Hero Shot
   - key: apv
     label: Client Approved
+  - key: rff
+    label: Ready for Formats
+  - key: rqc
+    label: Ready for QC
 
 shot_to_task:
   omt:
@@ -163,3 +171,7 @@ version_to_task:
     - hires
   apv:
     - hires
+  rff:
+    - rff
+  rqc:
+    - rqc
