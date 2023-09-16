@@ -1,3 +1,6 @@
+"""
+A module for interacting with the Shotgrid API.
+"""
 import os
 import logging
 

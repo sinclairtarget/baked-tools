@@ -1,3 +1,6 @@
+"""
+Utility code for better logging.
+"""
 import logging
 from logging.config import dictConfig
 

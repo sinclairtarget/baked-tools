@@ -1,3 +1,6 @@
+"""
+Application initialization.
+"""
 import json
 import sys
 import os

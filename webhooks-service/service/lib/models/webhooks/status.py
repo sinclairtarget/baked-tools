@@ -1,3 +1,6 @@
+"""
+Pydantic models defining what incoming request data should look like.
+"""
 from datetime import datetime
 from typing import Optional, Union, Literal
 

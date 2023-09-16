@@ -1,3 +1,6 @@
+"""
+Loads the status mapping configuration file.
+"""
 import yaml
 import pydantic
 

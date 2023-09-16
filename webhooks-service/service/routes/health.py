@@ -1,3 +1,6 @@
+"""
+Contains a /ping endpoint for checking if the application is up.
+"""
 from flask import Blueprint
 
 from ..lib.logging import get_logger
