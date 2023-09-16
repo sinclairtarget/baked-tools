@@ -1,3 +1,6 @@
+"""
+Pydantic models defining what the configuration file should contain.
+"""
 from typing import Dict
 from functools import reduce
 

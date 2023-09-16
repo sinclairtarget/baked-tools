@@ -1,3 +1,6 @@
+"""
+Contains all the important Shotgrid webhook endpoints.
+"""
 from datetime import datetime, timezone
 
 from flask import Blueprint, request, current_app, g

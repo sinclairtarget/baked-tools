@@ -1,3 +1,6 @@
+"""
+Exposes an endpoint for syncing data with Google sheets.
+"""
 import time
 
 from flask import Blueprint, request

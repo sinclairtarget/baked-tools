@@ -1,3 +1,6 @@
+"""
+Module for interacting with the Google sheets API.
+"""
 import os
 import logging
 import sys
