@@ -88,3 +88,18 @@ The logic for loading the `status_mapping.yaml` file can be found in
 
 The important code for interacting with the Shotgrid API can be found in
 [./service/lib/sg.py](./service/lib/sg.py).
+
+## Google Sheet Sync
+This is a brief overview of how the Google sheet sync works.
+
+In a Baked Live Tracking spreadsheet, there will be a menu option to "Sync with
+SG." When someone clicks that button, it runs some Google app script code.
+
+This code makes an HTTP request to the `/webhooks/sheets/sync` endpoint with
+the name and ID of the spreadsheet.
+
+The endpoint then parses the Shotgrid project name from the first part of the
+spreadsheet name and uses the Shotgrid API to look up the shots.
+
+It then uses the spreadsheet ID to make a call to the Google Sheets API to
+populate the sheet with the shot data.
