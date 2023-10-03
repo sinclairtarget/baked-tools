@@ -4,7 +4,7 @@ Welcome to batch converter - a.k.a "FLAYVA MAYKA 5000!"
 
 This app is designed to help convert files from one codec/container to the other in our Baked Pipeline.
 
-Here are the steps for creating a batch of PRORESes from a batch of EXRs. The same steps can be repeated for the two other flavors this thing can make.
+Here are the steps for creating a batch of PRORESes from a batch of EXRs. The same steps can be repeated for the two other flavors this thing can make - as well as for the -DNxHD container re-builder.
 
 1. Navigate to the folder structure named for the conversion you're trying to make.
 2. Open it up, and notice the "In" and "Out" folders. This is where you'll place your media and collect it when it's done.
