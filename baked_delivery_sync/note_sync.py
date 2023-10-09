@@ -3,7 +3,7 @@ import gspread
 from datetime import datetime
 
 ##############
-#GET SG STUFF#
+# GET SG STUFF#
 ##############
 
 # Retrieve API KEY
@@ -18,17 +18,17 @@ SCRIPT_KEY = retrieved_key
 # Connect to ShotGrid
 sg = shotgun_api3.Shotgun(SHOTGUN_URL, SCRIPT_NAME, SCRIPT_KEY)
 
-#temporary values - need to pull project name from first 3 characters in cell A1, and deilvery_iteration from last 2 (if applicable)- 
+# Temporary values - need to pull project name from first 3 characters in cell A1, and deilvery_iteration from last 2 (if applicable)- 
 #-in worksheet = Submission --- can be delivered in http?
 project_name = "BRC"
 delivery_iteration = "02"
 
-# Define version filters to narrow down the query
+# Define version filters
 filters = [
     ["project.Project.name", "is", project_name], ["sg_status_list", "is", "note"]
 ]
 
-# Define note filters to narrow down the query
+# Define note filters
 note_filters = [
     ["project.Project.name", "is", project_name], ["content", "contains", "FROM PRODUCTION"]
 ]
@@ -37,51 +37,62 @@ note_filters = [
 fields = ['sg_shot_code', 'code', 'sg_work_description']
 
 # Define note fields to be retrieved
-note_fields = ['content']
+note_fields = ['content', 'addressings_to']
 
-# Query the ShotGrid site
+# Query ShotGrid for versions
 versions = sg.find("Version", filters, fields)
 
-# Query the ShotGrid site
+# Query ShotGrid for notes
 notes = sg.find("Note", note_filters, note_fields)
 
 ###############
-#PUT ON GSHEET#
+# PUT ON GSHEET#
 ###############
 
-# Format the data from SG as a list of lists (each sub-list is a row)
-formatted_data = [[version[field] for field in fields] for version in versions]
+# Create a mapping between versions and notes
+version_note_map = {}
+for version in versions:
+    version_code = version['code']
+    version_note_map[version_code] = []
 
-# Format the notes data from SG as a list of lists (each sub-list is a row)
-formatted_notes_data = [[note[field] for field in note_fields] for note in notes]
+for note in notes:
+    note_content = note['content']
+    for version_code in version_note_map.keys():
+        if version_code in note_content:
+            version_note_map[version_code].append(note_content)
+
+# Create a list that includes both versions and corresponding notes
+formatted_data_with_notes = []
+for version in versions:
+    version_code = version['code']
+    version_row = [version[field] for field in fields]
+    notes_for_version = version_note_map.get(version_code, [])
+    version_row.extend(notes_for_version)  # Add notes to the row
+    formatted_data_with_notes.append(version_row)
 
 # Get the current date and time
 now = datetime.now()
 
-# Format the datetime object as YYMMDD
+# Format the datetime object
 formatted_date = now.strftime("%y%m%d")
 
-# remove "_" from below if delivery_iteration = ""
+# Update delivery_iteration_end_string based on delivery_iteration
 if delivery_iteration:
     delivery_iteration_end_string = "_" + delivery_iteration
 else:
     delivery_iteration_end_string = delivery_iteration
 
-# user service account to open sheet
+# Use service account to open sheet
 sa = gspread.service_account(filename="baked_delivery_sync/GOOGLE-SHEET-KEYS.json")
 sh = sa.open(project_name + "_BKD_VFX_Submission_" + formatted_date + delivery_iteration_end_string)
 
-# access correct worksheet
+# Access correct worksheet
 wks = sh.worksheet("Submission")
 
-# Clear the existing data from the worksheet
-# Fetch the range of cells
+# Clear existing data
 cell_range_to_clear = 'A3:D30'
-
-# Clear the values
 for cell in cell_range_to_clear:
     wks.update(cell_range_to_clear, [["" for _ in range(4)] for _ in range(28)])
 
-# update worksheet
-wks.update('A3', formatted_data)
-wks.update('D3', formatted_notes_data)
+# Update worksheet with both versions and corresponding notes
+wks.update('A3', formatted_data_with_notes)
