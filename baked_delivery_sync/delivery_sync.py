@@ -45,8 +45,12 @@ def sync_shotgrid_to_sheet(request):
     # Define note fields to be retrieved
     note_fields = ['content', 'addressings_to']
 
-    # Query ShotGrid for versions
-    versions = sg.find("Version", filters, fields)
+    try:
+        versions = sg.find("Version", filters, fields)
+        if not versions:
+            raise ValueError(f'SG was not able to find versions for project: {project_name}')
+    except Exception as e:
+        return str(e), 500
 
     # Sort versions by 'sg_shot_code' in alphabetical order
     sorted_versions = sorted(versions, key=lambda x: x['sg_shot_code'])
@@ -105,8 +109,11 @@ def sync_shotgrid_to_sheet(request):
     ## CONTACTS PULL FROM GSHEET ###
     ################################
 
+    try:
     # Open contacts sheet
-    sh = sa.open(project_name + "_CLIENT_CONTACT_SHEET")
+        sh = sa.open(project_name + "_CLIENT_CONTACT_SHEET")
+    except gspread.exceptions.SpreadsheetNotFound as e:
+        return f"Google was not able to locate your contact sheet, check naming and try again.", 500
 
     # access correct contacts worksheet
     wks = sh.worksheet("Sheet1")
@@ -117,8 +124,11 @@ def sync_shotgrid_to_sheet(request):
      # sync contacts
     contacts_out_data = contacts_in_data
 
+    try: 
     #open Submission Sheet
-    sh = sa.open(project_name + "_BKD_VFX_Submission_" + formatted_date + delivery_iteration_end_string)
+        sh = sa.open(project_name + "_BKD_VFX_Submission_" + formatted_date + delivery_iteration_end_string)
+    except gspread.exceptions.SpreadsheetNotFound as e:
+        return "Google was not able to locate your submission sheet, check naming, date, and try again.", 500
 
     # Access correct worksheet
     wks = sh.worksheet("Submission")
